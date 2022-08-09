@@ -14,7 +14,7 @@ window.onload = function() {
     {% if urls %}
     urls: {{ urls | tojson }},
     {% else %}
-    url: "{{ specs[0]['url'] }}",
+    url: ".{{ specs[0]['url'] }}".replace("/swagger", ""),
     {% endif %}
     dom_id: '#swagger-ui',
     validatorUrl: null,
@@ -32,20 +32,10 @@ window.onload = function() {
     plugins: [
         SwaggerUIBundle.plugins.DownloadUrl
     ],
-    {% if config.JWT_AUTH_URL_RULE -%}
+   
     requestInterceptor: function(request) {
-        if (jwt_token) {
-            {% if config.JWT_AUTH_HEADER_NAME -%}
-                var jwtAuthHeaderName = "{{ config.JWT_AUTH_HEADER_NAME }}";
-            {%- else %}
-                var jwtAuthHeaderName = "Authorization";
-            {%- endif %}
-            {% if config.JWT_AUTH_HEADER_TYPE -%}
-                var jwtAuthHeaderType = "{{ config.JWT_AUTH_HEADER_TYPE }}";
-            {%- else %}
-                var jwtAuthHeaderType = "Bearer";
-            {%- endif %}
-            request.headers[jwtAuthHeaderName] = jwtAuthHeaderType + " " + jwt_token;
+        if (!request.hasOwnProperty('loadSpec')){
+            request.url = window.location.origin + window.location.pathname.split("/swagger")[0] + request.url.replace(window.location.origin, "");
         }
 
         return request;
@@ -65,7 +55,7 @@ window.onload = function() {
 
         return response;
     },
-    {%- endif %}
+
     {% if not flasgger_config.hide_top_bar -%}
     layout: "StandaloneLayout",
     {%- endif %}
