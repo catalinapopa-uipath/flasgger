@@ -14,11 +14,11 @@ window.onload = function() {
     {% if urls %}
     urls: {{ urls | tojson }},
     {% else %}
-    url: ".{{ specs[0]['url'] }}".replace("/swagger", ""),
+    url: window.location.origin + window.location.pathname.split("/swagger")[0] + "{{ specs[0]['url'] }}",
     {% endif %}
     dom_id: '#swagger-ui',
     validatorUrl: null,
-    displayOperationId: true,
+    displayOperationId: false,
     deepLinking: true,
     jsonEditor: true,
     {% if flasgger_config.doc_expansion -%}
